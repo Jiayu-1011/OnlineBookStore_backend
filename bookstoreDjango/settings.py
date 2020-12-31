@@ -163,3 +163,16 @@ CORS_ALLOW_HEADERS = (
     'x-requested-with',
     'Pragma',
 )
+
+EMAIL_BACKEND='django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_SSL = True
+# 邮箱服务
+EMAIL_HOST = 'smtp.qq.com'
+# 端口号
+EMAIL_PORT = 465
+# 账号
+EMAIL_HOST_USER = '925823049@qq.com'
+# 授权秘钥 密钥要在QQ邮箱内开启IMAP/SMTP服务会获得
+EMAIL_HOST_PASSWORD ='grphkhymxufvbbef'
+# 发件人
+EMAIL_FROM='<925823049@qq.com>'

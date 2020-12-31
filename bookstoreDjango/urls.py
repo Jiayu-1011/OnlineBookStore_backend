@@ -26,6 +26,8 @@ urlpatterns = [
     path('GETTest/', api_views.GETTest),
     path('POSTTest/', api_views.POSTTest),
     path('login/', api_views.login),
+    path('verify/', api_views.verify),
+    path('register/', api_views.register),
     path('poster/', api_views.poster),
     path('bookList/', api_views.bookList),
 

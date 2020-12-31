@@ -8,6 +8,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 import os
 
+from django.db.models import Q
+
 from api.models import *
 
 def setIndex(request):
@@ -113,5 +115,62 @@ def bookList(request):
             'bookList': bookArr
         })
 
+from django.core.mail import send_mail
+from bookstoreDjango import settings
+import random
+def verify(request):
+    if request.method == 'POST':
+        print(request)
+        targetEmail = request.POST.get('email')
+        sub = '欢迎使用网上书店！'
+        code = ''
+        for i in range(6):
+            ch = chr(random.randrange(ord('0'), ord('9') + 1))
+            code += ch
+        msg = '您的验证码为：' + code
 
+        if EmailVerify.objects.filter(email=targetEmail).exists():
+            return HttpResponse('email exist')
+        else:
+            send_mail(
+                subject=sub,
+                message=msg,
+                from_email=settings.EMAIL_HOST_USER,
+                recipient_list=[
+                    targetEmail,
+                ]
+            )
+            if EmailVerify.objects.filter(email=targetEmail).exists():
+                EmailVerify.objects.get(email=targetEmail).update(verifyCode=code)
+            else:
+                EmailVerify.objects.create(email=targetEmail, verifyCode=code)
+            return HttpResponse('success')
+
+
+def register(request):
+    if request.method == 'POST':
+        acc = request.POST.get('account')
+        pwd = request.POST.get('password')
+        email = request.POST.get('email')
+        name = request.POST.get('name')
+        verifyCode = request.POST.get('verifyCode')
+
+        if User.objects.filter(account=acc).exists():
+            return HttpResponse('account exist')
+        elif User.objects.filter(email=email).exists():
+            return HttpResponse('email exist')
+        else:
+            print(email)
+            print(EmailVerify.objects.get(email=email).verifyCode)
+            if EmailVerify.objects.get(email=email).verifyCode != verifyCode:
+                return HttpResponse('verifyCode wrong')
+            else:
+                User.objects.create(
+                    account=acc,
+                    password=pwd,
+                    email=email,
+                    name=name,
+                )
+
+                return HttpResponse('success')
 
