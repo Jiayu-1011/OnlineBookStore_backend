@@ -17,6 +17,7 @@ class Book(models.Model):
     bookId = models.CharField(max_length=64, primary_key=True) #书名+出版时间，如 三体20201230
     name = models.CharField(max_length=64) #书名
     price = models.FloatField(max_length=64) #价格
+    writer = models.CharField(max_length=64, default='') #作者
     bookClass = models.CharField(max_length=64, default='') #类别 children/science/english/textbook
     salesPerMonth = models.IntegerField(default=0) #月销量
     publishTime = models.DateField() #出版时间

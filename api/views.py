@@ -94,22 +94,13 @@ def bookList(request):
             book = Book.objects.filter(name=bookName)
         else:
             bookClass = request.GET.get('bookClass')
-            book = Book.objects.filter(bookClass=bookClass)
+            book = Book.objects.filter(bookClass=bookClass).values()
         print(book)
         bookArr = []
         for item in book:
-            bookArr.append({
-                'bookId': item.bookId, # 书名 + 出版时间，如三体20201230
-                'bookClass': item.bookClass,
-                'imgUrl': item.imgUrl,
-                'name': item.name,
-                'price': item.price,
-                'salesPerMonth': item.salesPerMonth, # 月销量
-                'publishTime': item.publishTime,
-                'publisher': item.publisher,
-                'commentLevel': item.commentLevel,
-                'inventory': item.inventory,
-            })
+            print(item)
+
+            bookArr.append(item)
 
         return JsonResponse({
             'bookList': bookArr
