@@ -36,12 +36,7 @@ urlpatterns = [
     path('submitOrder/', api_views.submitOrder),
     path('deleteFromCart/', api_views.deleteFromCart),
     path('orderList/', api_views.orderList),
-
-
-
-
-
-
+    path('downloadBook/', api_views.downloadBook),
 
 
 

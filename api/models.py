@@ -30,6 +30,7 @@ class Book(models.Model):
     inventory = models.IntegerField(default=0) #库存量
     briefIntro = models.CharField(max_length=100, default='') #简介
     imgUrl = models.CharField(max_length=100, default='') # 书籍封面图片url,服务器上绝对路径,放在/sources/bookstore/cover/下面
+    eBookUrl = models.CharField(max_length=100, default='') # 电子书文件url
 
 
 class EmailVerify(models.Model):

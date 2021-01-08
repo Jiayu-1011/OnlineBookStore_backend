@@ -1,7 +1,7 @@
 from django.shortcuts import render
 
 # Create your views here.
-from django.http import HttpResponse,JsonResponse
+from django.http import HttpResponse,JsonResponse,FileResponse
 import json
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -261,7 +261,7 @@ def deleteFromCart(request):
         return HttpResponse()
 
 
-
+# 订单列表
 def orderList(request):
     if request.method == 'GET':
         print(request)
@@ -273,4 +273,19 @@ def orderList(request):
         return JsonResponse({
             'orderList': oList,
         })
+
+
+
+# 下载电子书
+def downloadBook(request):
+    if request.method == 'GET':
+        bookId = request.GET.get('bookId')
+        eBookUrl = Book.objects.get(bookId=bookId).eBookUrl
+        fileName = eBookUrl.split('/')[-1]
+        file = open(eBookUrl, 'rb')
+        response = FileResponse(file)
+        response['Content-Type'] = 'application/octet-stream'
+        response['Content-Disposition'] = 'attachment;file-name="1.pdf"'
+        return response
+
 
