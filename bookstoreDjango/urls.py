@@ -30,6 +30,16 @@ urlpatterns = [
     path('register/', api_views.register),
     path('poster/', api_views.poster),
     path('bookList/', api_views.bookList),
+    path('bookInfo/', api_views.bookInfo),
+    path('shoppingList/', api_views.shoppingList),
+    path('addToCart/', api_views.addToCart),
+    path('submitOrder/', api_views.submitOrder),
+    path('deleteFromCart/', api_views.deleteFromCart),
+    path('orderList/', api_views.orderList),
+
+
+
+
 
 
 
