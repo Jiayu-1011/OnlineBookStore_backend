@@ -117,7 +117,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Shanghai'
 
 USE_I18N = True
 
@@ -176,3 +176,6 @@ EMAIL_HOST_USER = '925823049@qq.com'
 EMAIL_HOST_PASSWORD ='grphkhymxufvbbef'
 # 发件人
 EMAIL_FROM='<925823049@qq.com>'
+
+
+DATA_UPLOAD_MAX_MEMORY_SIZE = 52428800  #默认设置为5M

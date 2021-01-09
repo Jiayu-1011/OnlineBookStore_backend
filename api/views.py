@@ -155,12 +155,14 @@ def register(request):
 def bookList(request):
     if request.method == 'GET':
         print(request)
-        if request.GET.get('name') != '':
+        if 'name' in request.GET:
             bookName = request.GET.get('name')
-            book = Book.objects.filter(name=bookName)
-        else:
+            book = Book.objects.filter(name=bookName).values()
+        elif 'bookClass' in request.GET:
             bookClass = request.GET.get('bookClass')
             book = Book.objects.filter(bookClass=bookClass).values()
+        else:
+            book = Book.objects.all().values()
         print(book)
         bookArr = []
         for item in book:
@@ -227,6 +229,7 @@ def submitOrder(request):
         # print(generatedOrderId())
         account = request.POST.get('account')
         orderTime = api.utils.generateFormatTime()
+        print(orderTime)
         goods = request.POST.get('bookId')
         goodsArr = goods.split(',')
         orderPrice = 0
@@ -277,15 +280,94 @@ def orderList(request):
 
 
 # 下载电子书
+import re
 def downloadBook(request):
     if request.method == 'GET':
         bookId = request.GET.get('bookId')
         eBookUrl = Book.objects.get(bookId=bookId).eBookUrl
+        relativeUrl = re.search(r'\/sources.*', eBookUrl).group()
         fileName = eBookUrl.split('/')[-1]
-        file = open(eBookUrl, 'rb')
+        file = open(relativeUrl, 'rb')
         response = FileResponse(file)
         response['Content-Type'] = 'application/octet-stream'
         response['Content-Disposition'] = 'attachment;file-name="1.pdf"'
         return response
 
 
+#管理员添加图书
+import base64
+def addBook(request):
+    if request.method == 'POST':
+        print(request)
+        bi = request.POST.dict()
+        #生成bookId
+        if 'publishTime' not in bi:
+            bi['bookId'] = bi['name'] + '20190101'
+        else:
+            bi['bookId'] = api.utils.generateBookId(bi['name'], bi['publishTime'])
+
+        #处理图书封面文件流
+        if 'coverFile' in bi:
+            coverFile = base64.b64decode(bi['coverFile'].split(',')[1])
+            coverName = ''.join(bi['bookId'].split(':')) + '.jpg'
+            coverPath = '/sources/bookstore/cover/' + coverName
+            with open(coverPath, 'wb') as f:
+                f.write(coverFile)
+            del bi['coverFile']
+
+        #处理电子书文件流
+        if 'eBookFile' in bi:
+            eBookFile = base64.b64decode(bi['eBookFile'].split(',')[1])
+            eBookName = ''.join(bi['bookId'].split(':')) + '.pdf'
+            eBookPath = '/sources/bookstore/eBook/' + eBookName
+            with open(eBookPath, 'wb') as f:
+                f.write(eBookFile)
+            del bi['eBookFile']
+
+
+
+
+
+        Book.objects.create(**bi)
+
+        return HttpResponse()
+
+
+# 修改图书信息
+def modifyBook(request):
+    if request.method == 'POST':
+        print(request)
+        bi = request.POST.dict()
+
+
+
+
+
+        # #生成bookId
+        # if 'publishTime' not in bi:
+        #     bi['bookId'] = bi['name'] + '20190101'
+        # else:
+        #     bi['bookId'] = api.utils.generateBookId(bi['name'], bi['publishTime'])
+
+        # #处理图书封面文件流
+        # if 'coverFile' in bi:
+        #     coverFile = base64.b64decode(bi['coverFile'].split(',')[1])
+        #     coverName = ''.join(bi['bookId'].split(':')) + '.jpg'
+        #     coverPath = '/sources/bookstore/cover/' + coverName
+        #     with open(coverPath, 'wb') as f:
+        #         f.write(coverFile)
+        #     del bi['coverFile']
+        #
+        # #处理电子书文件流
+        # if 'eBookFile' in bi:
+        #     eBookFile = base64.b64decode(bi['eBookFile'].split(',')[1])
+        #     eBookName = ''.join(bi['bookId'].split(':')) + '.pdf'
+        #     eBookPath = '/sources/bookstore/eBook/' + eBookName
+        #     with open(eBookPath, 'wb') as f:
+        #         f.write(eBookFile)
+        #     del bi['eBookFile']
+
+
+        Book.objects.filter(bookId=bi['bookId']).update(**bi)
+
+        return HttpResponse()

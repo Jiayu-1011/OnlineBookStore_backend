@@ -37,6 +37,8 @@ urlpatterns = [
     path('deleteFromCart/', api_views.deleteFromCart),
     path('orderList/', api_views.orderList),
     path('downloadBook/', api_views.downloadBook),
+    path('addBook/', api_views.addBook),
+    path('modifyBook/', api_views.modifyBook),
 
 
 

@@ -46,7 +46,7 @@ class Order(models.Model):
     orderId = models.CharField(max_length=64, primary_key=True) #订单编号
     account = models.CharField(max_length=64)
     goods = models.CharField(max_length=1000) #图书编号列表
-    orderTime = models.DateTimeField() #下单时间
+    orderTime = models.CharField(max_length=64) #下单时间
     orderPrice = models.FloatField() #订单金额
 
 
