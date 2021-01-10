@@ -48,7 +48,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    #'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -132,37 +132,38 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 #跨域增加忽略
-CORS_ALLOW_CREDENTIALS = True
-CORS_ORIGIN_ALLOW_ALL = True
-CORS_ORIGIN_WHITELIST = (
-    'http://127.0.0.1:8080',
-    'http://127.0.0.1:8081',
-    'http://*',
-)
-
-CORS_ALLOW_METHODS = (
-    'DELETE',
-    'GET',
-    'OPTIONS',
-    'PATCH',
-    'POST',
-    'PUT',
-    'VIEW',
-)
-
-CORS_ALLOW_HEADERS = (
-    'XMLHttpRequest',
-    'X_FILENAME',
-    'accept-encoding',
-    'authorization',
-    'content-type',
-    'dnt',
-    'origin',
-    'user-agent',
-    'x-csrftoken',
-    'x-requested-with',
-    'Pragma',
-)
+# CORS_ALLOW_CREDENTIALS = True
+# CORS_ORIGIN_ALLOW_ALL = True
+# CORS_ORIGIN_WHITELIST = (
+#     'http://127.0.0.1:8080',
+#     'http://127.0.0.1:8081',
+#     'http://*',
+#     'http://127.0.0.1:9000',
+# )
+#
+# CORS_ALLOW_METHODS = (
+#     'DELETE',
+#     'GET',
+#     'OPTIONS',
+#     'PATCH',
+#     'POST',
+#     'PUT',
+#     'VIEW',
+# )
+#
+# CORS_ALLOW_HEADERS = (
+#     'XMLHttpRequest',
+#     'X_FILENAME',
+#     'accept-encoding',
+#     'authorization',
+#     'content-type',
+#     'dnt',
+#     'origin',
+#     'user-agent',
+#     'x-csrftoken',
+#     'x-requested-with',
+#     'Pragma',
+# )
 
 EMAIL_BACKEND='django.core.mail.backends.smtp.EmailBackend'
 EMAIL_USE_SSL = True
@@ -178,4 +179,4 @@ EMAIL_HOST_PASSWORD ='grphkhymxufvbbef'
 EMAIL_FROM='<925823049@qq.com>'
 
 
-DATA_UPLOAD_MAX_MEMORY_SIZE = 52428800  #默认设置为5M
+DATA_UPLOAD_MAX_MEMORY_SIZE = 52428800  #默认设置为50M

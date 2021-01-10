@@ -25,7 +25,7 @@ class Book(models.Model):
     bookClass = models.CharField(max_length=64, default='') #类别 children/science/english/textbook
     salesPerMonth = models.IntegerField(default=0) #月销量
     publishTime = models.DateField(default='2019-01-01') #出版时间
-    publisher = models.CharField(max_length=50, default='unknown') #出版社
+    publisher = models.CharField(max_length=50, default='') #出版社
     commentLevel = models.IntegerField(default=0) #评价等级 从0-5表示星数
     inventory = models.IntegerField(default=0) #库存量
     briefIntro = models.CharField(max_length=100, default='') #简介

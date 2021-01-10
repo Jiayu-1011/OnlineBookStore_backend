@@ -8,7 +8,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 import os
 
-from django.db.models import Q
+from django.db.models import *
 
 from api.models import *
 
@@ -64,6 +64,7 @@ def login(request):
                     'msg': 'right',
                     'identity': user.identity,
                     'name': user.name,
+                    'balance': user.balance,
                 })
         else:
             return JsonResponse({
@@ -155,10 +156,21 @@ def register(request):
 def bookList(request):
     if request.method == 'GET':
         print(request)
-        if 'name' in request.GET:
-            bookName = request.GET.get('name')
-            book = Book.objects.filter(name=bookName).values()
-        elif 'bookClass' in request.GET:
+        #搜索关键词
+        if request.GET.get('name') != '':
+            keyword = request.GET.get('name')
+            allBook = Book.objects.all().values()
+            book = []
+            for item in allBook:
+                regExp = r'.*' + keyword + r'.*'
+
+                if re.search(regExp, item['name'], re.I) is not None:
+                    name = re.search(regExp, item['name'], re.I).group()
+                    simpleBook = Book.objects.filter(name=name).values()[0]
+                    book.append(simpleBook)
+
+        #选择类别
+        elif request.GET.get('bookClass') != '':
             bookClass = request.GET.get('bookClass')
             book = Book.objects.filter(bookClass=bookClass).values()
         else:
@@ -248,6 +260,10 @@ def submitOrder(request):
         for targetId in goodsArr:
             ShoppingCart.objects.filter(bookId=targetId, account=account).delete()
 
+        #扣除用户余额
+        balance = User.objects.filter(account=account).values()[0]['balance'] - orderPrice
+        User.objects.filter(account=account).update(balance=balance)
+
         return HttpResponse()
 
 
@@ -314,6 +330,7 @@ def addBook(request):
             with open(coverPath, 'wb') as f:
                 f.write(coverFile)
             del bi['coverFile']
+            bi['imgUrl'] = 'http://119.29.24.77' + coverPath
 
         #处理电子书文件流
         if 'eBookFile' in bi:
@@ -323,6 +340,7 @@ def addBook(request):
             with open(eBookPath, 'wb') as f:
                 f.write(eBookFile)
             del bi['eBookFile']
+            bi['eBookUrl'] = 'http://119.29.24.77' + eBookPath
 
 
 
@@ -338,9 +356,6 @@ def modifyBook(request):
     if request.method == 'POST':
         print(request)
         bi = request.POST.dict()
-
-
-
 
 
         # #生成bookId
@@ -371,3 +386,62 @@ def modifyBook(request):
         Book.objects.filter(bookId=bi['bookId']).update(**bi)
 
         return HttpResponse()
+
+
+# 图书统计信息
+def bookStats(request):
+    if request.method == 'GET':
+        print(request)
+        classes = Book.objects.all().values('bookClass').distinct()
+        classStats = []
+
+        for item in classes:
+            quantity = Book.objects.filter(bookClass=item['bookClass']).values().count()
+            classStats.append({
+                'class': item['bookClass'],
+                'quantity': quantity,
+            })
+
+
+        return JsonResponse({
+            'classStats': classStats
+        })
+
+
+# 获取用户列表
+def userList(request):
+    if request.method == 'GET':
+        print(request)
+        user = User.objects.all().values('name', 'account', 'balance')
+        uList = []
+        for item in user:
+            uList.append(item)
+
+        return JsonResponse({
+            'userList': uList,
+        })
+
+
+# 充值
+def recharge(request):
+    if request.method == 'POST':
+        print(request)
+        ui = request.POST.dict()
+
+        targetUser = User.objects.filter(account=ui['account']).values()[0]
+        ui['balance'] = targetUser['balance'] + float(ui['balance'])
+        User.objects.filter(account=ui['account']).update(balance=ui['balance'])
+
+        return HttpResponse()
+
+
+# 获取用户详情
+def userInfo(request):
+    if request.method == 'GET':
+        print(request)
+        account = request.GET.get('account')
+        ui = User.objects.filter(account=account).values()[0]
+
+        return JsonResponse({
+            'userInfo': ui,
+        })

@@ -39,6 +39,10 @@ urlpatterns = [
     path('downloadBook/', api_views.downloadBook),
     path('addBook/', api_views.addBook),
     path('modifyBook/', api_views.modifyBook),
+    path('bookStats/', api_views.bookStats),
+    path('userList/', api_views.userList),
+    path('recharge/', api_views.recharge),
+    path('userInfo/', api_views.userInfo),
 
 
 
