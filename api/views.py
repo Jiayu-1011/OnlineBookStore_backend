@@ -156,31 +156,52 @@ def register(request):
 def bookList(request):
     if request.method == 'GET':
         print(request)
-        #搜索关键词
-        if request.GET.get('name') != '':
-            keyword = request.GET.get('name')
-            allBook = Book.objects.all().values()
-            book = []
-            for item in allBook:
-                regExp = r'.*' + keyword + r'.*'
+        conditions = {}
+        for key in request.GET:
+            if key == 'keyWord' or key == 'sortType' or key == 'pageNum':
+                continue
+            conditions[key] = request.GET[key]
 
+        bookArr = []
+        if request.GET.get('keyWord') is not None:
+            keyWord = request.GET.get('keyWord')
+            allBook = Book.objects.all().values()
+            names = []
+            for item in allBook:
+                regExp = r'.*' + keyWord + r'.*'
+                # 正则匹配， re.I表示不区分大小写
                 if re.search(regExp, item['name'], re.I) is not None:
                     name = re.search(regExp, item['name'], re.I).group()
-                    simpleBook = Book.objects.filter(name=name).values()[0]
-                    book.append(simpleBook)
+                    names.append(name)
 
-        #选择类别
-        elif request.GET.get('bookClass') != '':
-            bookClass = request.GET.get('bookClass')
-            book = Book.objects.filter(bookClass=bookClass).values()
+            for name in names:
+                cds = conditions
+                cds['name'] = name
+
+                book = Book.objects.filter(**cds).values()[0]
+                bookArr.append(book)
+
         else:
-            book = Book.objects.all().values()
-        print(book)
-        bookArr = []
-        for item in book:
-            print(item)
+            for item in Book.objects.filter(**conditions).values():
+                bookArr.append(item)
 
-            bookArr.append(item)
+        #字典实现switch选择
+        sortFunc = {
+            'comprehensive': lambda e: e['name'],
+            'sales': lambda e: e['salesPerMonth'],
+            'price': lambda e: e['price'],
+            'comment': lambda e: e['commentLevel'],
+            'default': lambda e: e['name'],
+        }
+
+        sortType = request.GET['sortType']
+        #如果是销量排序和好评排序，则降序排
+        if sortType == 'sales' or sortType == 'comment':
+            bookArr.sort(key=sortFunc[sortType], reverse=True)
+        #否则升序排
+        else:
+            bookArr.sort(key=sortFunc[sortType])
+
 
         return JsonResponse({
             'bookList': bookArr
