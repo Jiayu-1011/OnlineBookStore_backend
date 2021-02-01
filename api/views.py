@@ -194,7 +194,11 @@ def bookList(request):
             'default': lambda e: e['name'],
         }
 
-        sortType = request.GET['sortType']
+        if 'sortType' in request.GET:
+            sortType = request.GET['sortType']
+        else:
+            sortType = 'default'
+
         #如果是销量排序和好评排序，则降序排
         if sortType == 'sales' or sortType == 'comment':
             bookArr.sort(key=sortFunc[sortType], reverse=True)
